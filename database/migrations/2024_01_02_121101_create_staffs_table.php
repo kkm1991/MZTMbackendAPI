@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('debt')->nullable();
             $table->longText('address')->nullable();
             $table->longText('image')->nullable();
-            $table->boolean('active_status');
+            $table->boolean('active_status')->default(true);
             $table->timestamps();
         });
     }
