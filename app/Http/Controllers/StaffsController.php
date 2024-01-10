@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Staffs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 class StaffsController extends Controller
@@ -31,34 +32,87 @@ class StaffsController extends Controller
             'depID'=>'required',
             'positionID'=>'required',
             'basic_salary'=>'required',
-            'image'=>'mimes:jpg,png,jpeg'
+
         ]);
 
         if($validator->fails()){
             return response()->json(['message'=>$validator->errors()],442);
         }
         else{
-            $imagepath=null;
-            if($request->File("image")){
-                $image=$request->image;
-                $imagename=time().'.'.$image->getClientOriginalExtension();
-                $image->storeAs('uploads',$imagename,'public');
-                $imagepath=$imagename;
-            }
 
-            Staffs::create([
-                'name'=>$request->name,
-                'father_name'=>$request->father_name,
-                'start_working_date'=>$request->start_working_date,
-                'dob'=>$request->dob,
-                'educationID'=>$request->educationID,
-                'depID'=>$request->depID,
-                'positionID'=>$request->positionID,
-                'basic_salary'=>$request->basic_salary,
-                'image'=>$imagepath,
+                $updatestaff=Staffs::find($request->id);
+                if($updatestaff){
+                    $updatestaff->name=$request->name;
+                    $updatestaff->nrc=$request->nrc;
+                    $updatestaff->father_name=$request->father_name;
+                    $updatestaff->start_working_date=$request->start_working_date;
+                    $updatestaff->dob=$request->dob;
+                    $updatestaff->educationID=$request->educationID;
+                    $updatestaff->depID=$request->depID;
+                    $updatestaff->positionID=$request->positionID;
+                    $updatestaff->basic_salary=$request->basic_salary;
+                   if($request->hasfile("image")){
+                    $oldimage=$updatestaff->image;
+                    if(File::exists(public_path().'/storage/uploads/'.$oldimage)){
+                       File::delete(public_path().'/storage/uploads/'.$oldimage);
+
+                    }
+                    $image=$request->file('image');
+                    $imagename=time().'.'.$image->getClientOriginalExtension();
+                    $image->storeAs('uploads',$imagename,'public');
+                    $updatestaff->image=$imagename;
+                    }
+                    $updatestaff->update();
+                }
+                else{
 
 
-            ]);
+                     $image=$request->file('image');
+                     $imagename=time().'.'.$image->getClientOriginalExtension();
+                     $image->storeAs('uploads',$imagename,'public');
+
+
+                     Staffs::create([
+                        'name'=>$request->name,
+                        'nrc'=>$request->nrc,
+                        'father_name'=>$request->father_name,
+                        'start_working_date'=>$request->start_working_date,
+                        'dob'=>$request->dob,
+                        'educationID'=>$request->educationID,
+                        'depID'=>$request->depID,
+                        'positionID'=>$request->positionID,
+                        'basic_salary'=>$request->basic_salary,
+                        'image'=>$imagename,
+
+
+                    ]);
+
+
+            //     $newstaff=new Staffs();
+            //     $newstaff->name=$request->name;
+            //     $newstaff->nrc=$request->nrc;
+            //     $newstaff->father_name=$request->father_name;
+            //     $newstaff->start_working_date=$request->start_working_date;
+            //     $newstaff->dob=$request->dob;
+            //     $newstaff->educationID=$request->educationID;
+            //     $newstaff->depID=$request->depID;
+            //     $newstaff->positionID=$request->positionID;
+            //     $newstaff->basic_salary=$request->basic_salary;
+            //
+            //     $newstaff->save();
+                }
+
+
+
+
+
+
+
+
+
+
+
+
             $staff=Staffs::all();
             return response()->json($staff,200);
 
@@ -68,7 +122,11 @@ class StaffsController extends Controller
 
     //ဝန်ထမ်းဖျက် အစ
     public function delete(Request $request){
-        Staffs::destroy($request->id);
+       $deletestaff= Staffs::find($request->id);
+        if(File::exists(public_path().'/storage/uploads/'.$deletestaff->image)){
+            File::delete(public_path().'/storage/uploads/'.$deletestaff->image);
+         }
+         $deletestaff->delete();
         $staff=Staffs::all();
         return response()->json($staff, 200);
     }
