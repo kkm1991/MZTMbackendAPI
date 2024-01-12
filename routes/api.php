@@ -33,4 +33,5 @@ use App\Http\Controllers\EducationController;
      Route::post('create',[StaffsController::class,'createprofile']);
      Route::get('delete',[StaffsController::class,'delete']);
      Route::post('status',[StaffsController::class,'changestatus']);
+     Route::get('payment',[StaffsController::class,'paymentlist']);
  });
