@@ -7,6 +7,8 @@ use App\Http\Controllers\DepsController;
 use App\Http\Controllers\StaffsController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\EducationController;
+use App\Http\Controllers\DefaultReservationController;
+use App\Http\Controllers\MonthlyReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +37,9 @@ use App\Http\Controllers\EducationController;
      Route::post('status',[StaffsController::class,'changestatus']);
      Route::get('payment',[StaffsController::class,'paymentlist']);
  });
+
+Route::middleware(['auth:sanctum'])->prefix('reservation')->group(function(){
+    Route::post('add/monthly',[MonthlyReservationController::class,'add']);
+    Route::post('add/default',[DefaultReservationController::class,'add']);
+    Route::get('load/monthly',[MonthlyReservationController::class,'loadReservation']);
+});
