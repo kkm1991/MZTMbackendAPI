@@ -39,7 +39,8 @@ use App\Http\Controllers\MonthlyReservationController;
  });
 
 Route::middleware(['auth:sanctum'])->prefix('reservation')->group(function(){
-    Route::post('add/monthly',[MonthlyReservationController::class,'add']);
+    Route::post('add/monthly',[MonthlyReservationController::class,'add']); // create နဲ့ update ကိုပေါင်းရေးထားတယ်
     Route::post('add/default',[DefaultReservationController::class,'add']);
     Route::get('load/monthly',[MonthlyReservationController::class,'loadReservation']);
+    Route::get('load/default',[DefaultReservationController::class,'loadReservation']);
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\defaultReservation;
 use App\Models\monthlyReservation;
 use Illuminate\Support\Facades\Log;
 
@@ -66,8 +67,29 @@ class MonthlyReservationController extends Controller
             //ရှိရင် အဲ့ဒီဝန်ထမ်းရဲ့ကြိုတင်စာရင်းကိုပြန်ပို.တယ်
             return response()->json($checkReservation, 200 );
         }
-        else{
-            //မရှိရင် ပုံသေကြိုတင်စာရင်းကိုပြန်မယ်
+        else{  //လစဉ်ကြိုတင်စာရင်းထဲမှာမရှိရင် ပုံသေကြိုတင်စာရင်းကိုပို.တယ်
+            $checkDefaultReservation=defaultReservation::where('staff_id',$request->staff_id)->first();
+            if($checkDefaultReservation){
+                 $responseData=[
+                    'rareCost'=> $checkDefaultReservation->rareCost,
+                    'bonus'=> $checkDefaultReservation->bonus,
+                    'attendedBonus'=> $checkDefaultReservation->attendedBonus,
+                    'busFee'=> $checkDefaultReservation->busFee,
+                    'mealDeduct'=> $checkDefaultReservation->mealDeduct,
+                    'absence'=> $checkDefaultReservation->absence,
+                    'ssbFee'=> $checkDefaultReservation->ssbFee,
+                    'fine'=> $checkDefaultReservation->fine,
+                    'redeem'=> $checkDefaultReservation->redeem,
+                    'advance_salary'=> $checkDefaultReservation->advance_salary,
+                    'otherDeductLable'=> $checkDefaultReservation->otherDeductLable,
+                    'otherDeduct'=> $checkDefaultReservation->otherDeduct,
+                    'staff_id'=> $checkDefaultReservation->staff_id,
+                 ];
+                return response()->json($responseData, 200);
+            }
+            else{
+                return response()->json(['message'=>"There is not Defult Reservation with this Staff"]);
+            }
 
         }
     }

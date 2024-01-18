@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Staffs;
 use Illuminate\Http\Request;
+use App\Models\defaultReservation;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -84,7 +85,7 @@ class StaffsController extends Controller
 
 
 
-                     Staffs::create([
+                     $createdstaff=Staffs::create([
                         'name'=>$request->name,
                         'nrc'=>$request->nrc,
                         'father_name'=>$request->father_name,
@@ -98,6 +99,9 @@ class StaffsController extends Controller
 
 
                     ]);
+
+                    //default reservation ကို staff create လုပ်ကတည်းက ထဲ့ထားတယ်နောက်မှပြန်မထဲ့ချင်လို.
+                    $this->createDefaultReservation($createdstaff->id);
                 }
                 return $this->responsesStaff($request->key);
 
@@ -105,6 +109,30 @@ class StaffsController extends Controller
         }
     }
     //ဝန်ထမ်းအသစ်ထဲ့ အဆုံး
+
+
+    public function createDefaultReservation($staffid){
+        defaultReservation::create([
+            'rareCost'=>0,
+            'bonus'=>0,
+            'attendedBonus'=>0,
+            'busFee'=>0,
+            'mealDeduct'=>0,
+            'absence'=>0,
+            'ssbFee'=>0,
+            'fine'=>0,
+            'redeem'=>0,
+            'advance_salary'=>0,
+
+            'otherDeduct'=>0,
+            'staff_id'=>$staffid
+        ]);
+    }
+
+    public function deleteDefaultReservation($staffid){
+        $deletedefaultreservation=defaultReservation::where('staff_id',$staffid);
+        $deletedefaultreservation->delete();
+    }
 
     //ဝန်ထမ်းဖျက် အစ
 
@@ -114,6 +142,8 @@ class StaffsController extends Controller
             File::delete(public_path().'/storage/uploads/'.$deletestaff->image);
          }
          $deletestaff->delete();
+
+         $this->deleteDefaultReservation($request->id);
          return $this->responsesStaff($request->key);
     }
     //ဝန်ထမ်းဖျက်အဆုံး
