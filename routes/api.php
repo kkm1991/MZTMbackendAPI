@@ -43,4 +43,6 @@ Route::middleware(['auth:sanctum'])->prefix('reservation')->group(function(){
     Route::post('add/default',[DefaultReservationController::class,'add']);
     Route::get('load/monthly',[MonthlyReservationController::class,'loadReservation']);
     Route::get('load/default',[DefaultReservationController::class,'loadReservation']);
+    Route::post('update/monthly',[MonthlyReservationController::class,'updateReservation']);
+    Route::post('update/default',[DefaultReservationController::class,'updateReservation']);
 });

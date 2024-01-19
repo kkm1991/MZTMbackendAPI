@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class defaultReservation extends Model
 {
     use HasFactory;
-    public $fillable=['rareCost',
+    public $fillable=[
+    'rareCost',
     'bonus',
     'attendedBonus',
     'busFee',
@@ -20,5 +21,6 @@ class defaultReservation extends Model
     'advance_salary',
     'otherDeductLable',
     'otherDeduct',
-    'staff_id' ];
+    'staff_id'
+];
 }

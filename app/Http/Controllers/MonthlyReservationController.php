@@ -69,6 +69,9 @@ class MonthlyReservationController extends Controller
         }
         else{  //လစဉ်ကြိုတင်စာရင်းထဲမှာမရှိရင် ပုံသေကြိုတင်စာရင်းကိုပို.တယ်
             $checkDefaultReservation=defaultReservation::where('staff_id',$request->staff_id)->first();
+            //ဒီမှာ default reservation ကို ပြန်ပေးတဲ့အခါမှာ id ကိုမထဲ့ပေးလိုက်ဘူးဘာကြောင့်လည်းဆိုတော့ frontend ဘက်မှာ
+            // monthly reservation အသစ်ထဲ့ရင် reservation id ရှိမရှိနဲ့ create ,update ကိုဖမ်းထားတာကြောင့်
+            // ဒီက default reservation id ကိုထဲ့ပေးလိုက်ရင် ဟိုဘက်မှာ id ရှိတယ်ဆိုပြီးရောသွားမှာစိုးလို.
             if($checkDefaultReservation){
                  $responseData=[
                     'rareCost'=> $checkDefaultReservation->rareCost,
