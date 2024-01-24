@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepsController;
+use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\StaffsController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\EducationController;
@@ -45,4 +46,14 @@ Route::middleware(['auth:sanctum'])->prefix('reservation')->group(function(){
     Route::get('load/default',[DefaultReservationController::class,'loadReservation']);
     Route::post('update/monthly',[MonthlyReservationController::class,'updateReservation']);
     Route::post('update/default',[DefaultReservationController::class,'updateReservation']);
+    Route::get('list/monthly',[MonthlyReservationController::class,'getMonthlyList']);
+    Route::get('search/monthly',[MonthlyReservationController::class,'searchMonthlyList']);
+
+});
+
+Route::middleware(['auth:sanctum'])->prefix('salary')->group(function(){
+    Route::get('add',[SalaryController::class,'addSalary']);
+    Route::get('list',[SalaryController::class,'loadSalary']);
+    Route::get('search',[SalaryController::class,'searchsalary']);
+    Route::patch('update',[SalaryController::class,'updatesalary']);
 });

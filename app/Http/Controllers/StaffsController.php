@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\salary;
 use App\Models\Staffs;
 use Illuminate\Http\Request;
 use App\Models\defaultReservation;
@@ -173,6 +174,15 @@ class StaffsController extends Controller
     }
 
     public function paymentlist(Request $request){
+    //ယခုလတွက်လစာပေးပြီးသား သူတွေရဲ့ id တွေကိုပဲဆွဲထုတ်လိုက်ပြီး $staffIds ထဲထဲ့လိုက်တယ်
+    $currentMonth = date('m');
+    $currentYear = date('Y');
+        $staffInSalary=salary::whereMonth('created_at',$currentMonth)
+        ->whereYear('created_at',$currentYear)
+        ->pluck('staff_id') //id တစ်column ပဲဆွဲထုတ်တာ
+        ->toArray();
+
+
         $stafflist=Staffs::when($request->key,function($query) use($request){
             $query->where('active_status',$request->key);
 
@@ -182,6 +192,7 @@ class StaffsController extends Controller
         ->leftJoin('education','staffs.educationID','=','education.id')
         ->leftJoin('positions','staffs.positionID','=','positions.id')
         ->orderby('id','desc')
+        ->whereNotIn('staffs.id',$staffInSalary)//အပေါ်က ယခုလအတွက်လစာပေးစာရင်းထဲမှာပါတဲ့ ဝန်ထမ်းတွေမပါအောင်လုပ်တာ
         ->get();
 
         return response()->json($stafflist, 200);

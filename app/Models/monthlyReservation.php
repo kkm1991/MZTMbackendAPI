@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Staffs;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class monthlyReservation extends Model
 {
     use HasFactory;
 
-    public $fillable=['rareCost',
+    public $fillable=[
+    'rareCost',
     'bonus',
     'attendedBonus',
     'busFee',
@@ -22,4 +24,10 @@ class monthlyReservation extends Model
     'otherDeductLable',
     'otherDeduct',
     'staff_id' ];
+
+    public function staff(){
+        return $this->belongsTo(Staffs::class);
+    }
+
 }
+

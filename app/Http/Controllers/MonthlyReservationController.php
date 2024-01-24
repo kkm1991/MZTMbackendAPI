@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Models\defaultReservation;
 use App\Models\monthlyReservation;
 use Illuminate\Support\Facades\Log;
 
 class MonthlyReservationController extends Controller
 {
+
+    //frontend ကနေ reservation id ပါလာရင် update လုပ်မယ် မပါလာရင် အသစ်ထဲ့မယ် ဆိုတဲ့အတွက် update ကိုမရေးတာ
     public function add(Request $request){
         $createdata=[
             'rareCost'=>$request->rareCost,
@@ -24,10 +27,6 @@ class MonthlyReservationController extends Controller
             'otherDeductLable'=>$request->otherDeductLable,
             'staff_id'=>$request->staff_id,
         ];
-
-
-
-
         if($request->id==null){
             monthlyReservation::create($createdata);
 
@@ -56,6 +55,39 @@ class MonthlyReservationController extends Controller
         // }
 
 
+    }
+    public function getMonthlyList(){
+       try{
+
+        $currentMonth=date('m');
+        $currentYear=date('Y');
+        $MonthlyList=monthlyReservation::with('staff')->whereMonth('created_at',$currentMonth)->whereYear('created_at',$currentYear)->get();
+        return response()->json($MonthlyList, 200);
+       }
+       catch(\Exeption $e){
+         return response()->json(['error'=>$e->getMessage()], 500 );
+       }
+
+    }
+
+    public function searchMonthlyList(){
+        try{
+            $selectedDate=request()->selectDate; //ဟိုဘက်ကပို.လိုက်တဲ့ params ကိုလက်ခံတယ်
+            $date=Carbon::parse($selectedDate); //backend ကလက်ခံတဲ့ format ပြောင်းတယ်
+            $selectMonth=$date->format('m'); //လကိုခွဲထုတ်တယ်
+            $selectYear=$date->format('Y');//နှစ်ကိုခွဲထုတ်တယ်
+
+            $MonthlyList=monthlyReservation::with('staff') //staff ဆိုတာက monthlyReservation model ထဲမှာရေးထားတဲ့ relationship method
+                        ->whereMonth('created_at',$selectMonth)
+                        ->whereYear('created_at',$selectYear)->get();
+            if($MonthlyList->count()>0){
+                return response()->json($MonthlyList, 200);
+            }
+            return response()->json(['message'=>'There is not data'],204);
+           }
+           catch(\Exeption $e){
+             return response()->json(['error'=>$e->getMessage()], 500 );
+           }
     }
 
     public function loadReservation(Request $request){
