@@ -37,8 +37,22 @@ class SalaryController extends Controller
         }
 
     }
+
+    //delete salary function မှာ reservation ကိုပါဖျက်တဲ့စနစ်လုပ်ထားတယ်
+    public function deletesalary(Request $request){
+        $deletereservation=monthlyReservation::where('id',$request->reservation_id);
+        $deletereservation->delete();
+
+        $deletesalary=salary::where('id',$request->id);
+        $deletesalary->delete();
+        return response()->json(['message'=>"Salary and Reservation List deleted"], 200 );
+    }
+
+    //sarlary ကို update လုပ် ရင် reservation ကိုပါ update မယ်
         public function updatesalary(Request $request){
             Log::info('Request data:', $request->all());
+
+            //monthly reservation update function
             $this->updatemonthlyReservation($request);
 
             $salaryupdate=salary::find($request->id);
