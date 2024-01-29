@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('otherDeductLable')->nullable();
             $table->integer('otherDeduct');
             $table->integer('staff_id');
+            $table->integer('dep');
             $table->integer('reservation_id');
             $table->integer('finalTotal');
             $table->timestamps();

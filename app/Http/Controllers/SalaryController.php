@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Log;
 use Carbon\Carbon;
+use App\Models\deps;
 use App\Models\salary;
 use Illuminate\Http\Request;
 use App\Models\defaultReservation;
@@ -31,7 +32,7 @@ class SalaryController extends Controller
             $date=Carbon::parse($selectedDate); //backend ကလက်ခံတဲ့ format ပြောင်းတယ်
             $Month=$date->format('m'); //လကိုခွဲထုတ်တယ်
             $Year=$date->format('Y');//နှစ်ကိုခွဲထုတ်တယ်
-            $salarylist=salary::with('staff')->whereMonth('created_at',$Month)->whereYear('created_at',$Year)->get();
+            $salarylist=salary::with('staff','staff.dep')->whereMonth('created_at',$Month)->whereYear('created_at',$Year)->get();
 
             return response()->json($salarylist, 200 );
         }
@@ -126,7 +127,7 @@ class SalaryController extends Controller
 
             if($checkMonthlyReservation->count()>0){
                 //အကယ်၍ monthly reservation ထဲမှာ current date format နဲ့ စာရင်းရှိရင် monthly reservation နဲ့လစာပေးမယ်
-              $this->createSalary($checkMonthlyReservation);
+              $this->createSalary($checkMonthlyReservation,$request->dep);
             }
             else{
                 //monthly reservation မှာစာရင်းမရှိရင် default reservation ကို monthly reservation စာရင်းထဲ့မှာအရင်သွင်းမယ်
@@ -153,15 +154,14 @@ class SalaryController extends Controller
                 // ->get();
 
                 //အပေါ်မှာအသစ်လုပ်လိုက်တဲ့ monthly reservation အသစ်ကိုထဲ့ပေးလိုက်တယ်
-                $this->createSalary($createMonthlyReservation);
+                $this->createSalary($createMonthlyReservation,$request->dep);
 
             }
         }
 
 
-
     }
-    public function createSalary($reservation){
+    public function createSalary($reservation,$dep){
 
           $addsalary=new salary();
 
@@ -185,6 +185,7 @@ class SalaryController extends Controller
               $addsalary->otherDeductLable=$monthlyReservation->otherDeductLable;
               $addsalary->otherDeduct=$monthlyReservation->otherDeduct;
               $addsalary->staff_id=$monthlyReservation->staff_id;
+              $addsalary->dep=$dep;
               $addsalary->reservation_id=$monthlyReservation->id;
               $totaldeduct=$monthlyReservation->mealDeduct+
               $monthlyReservation->absence+
@@ -198,5 +199,25 @@ class SalaryController extends Controller
 
           }
 
+    }
+
+    public function salaryReport(Request $request){
+        $selectedDate=$request->monthPicker;
+        Log::info('Request data:', $request->all());
+        if($selectedDate){
+
+            $timestamp=strtotime($selectedDate);
+            $startDateTime=date('Y-m-01 00:00:00',$timestamp);
+            $endDateTime=date('Y-m-t 23:59:59',$timestamp);
+
+            $summarybyDeps=new deps();
+            $summaryListByDeps=$summarybyDeps->getSummaryByDate($startDateTime,$endDateTime);
+
+
+        }
+        else{
+            $summarybyDeps=["message"=>"There is no Salaries in this month"];
+        }
+        return response()->json($summaryListByDeps, 200 );
     }
 }

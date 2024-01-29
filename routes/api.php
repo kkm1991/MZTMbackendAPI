@@ -57,4 +57,5 @@ Route::middleware(['auth:sanctum'])->prefix('salary')->group(function(){
     Route::get('search',[SalaryController::class,'searchsalary']);
     Route::patch('update',[SalaryController::class,'updatesalary']);
     Route::get('delete',[SalaryController::class,'deletesalary']);
+    Route::get('report',[SalaryController::class,'salaryReport']);
 });
