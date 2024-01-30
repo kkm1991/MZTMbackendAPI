@@ -28,6 +28,15 @@ use App\Http\Controllers\MonthlyReservationController;
     Route::get('deps',[DepsController::class,'list']);
     Route::get('positions',[PositionController::class,'list']);
     Route::get('educations',[EducationController::class,'list']);
+    Route::patch('edit/position',[PositionController::class,'edit']);
+    Route::patch('edit/deps',[DepsController::class,'edit']);
+    Route::patch('edit/education',[EducationController::class,'edit']);
+    Route::post('add/position',[PositionController::class,'add']);
+    Route::post('add/deps',[DepsController::class,'add']);
+    Route::post('add/education',[EducationController::class,'add']);
+    Route::delete('delete/position',[PositionController::class,'delete']);
+    Route::delete('delete/deps',[DepsController::class,'delete']);
+    Route::delete('delete/education',[EducationController::class,'delete']);
  });
 
  Route::middleware(['auth:sanctum'])->prefix('staffs')->group(function () {
@@ -37,6 +46,7 @@ use App\Http\Controllers\MonthlyReservationController;
      Route::get('delete',[StaffsController::class,'delete']);
      Route::post('status',[StaffsController::class,'changestatus']);
      Route::get('payment',[StaffsController::class,'paymentlist']);
+
  });
 
 Route::middleware(['auth:sanctum'])->prefix('reservation')->group(function(){

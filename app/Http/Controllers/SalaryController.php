@@ -19,7 +19,7 @@ class SalaryController extends Controller
         $Year=$currentDate->format('Y');
 
         // staff ဆိုတာ salary model ထဲမှာရေးထားတဲ့ relationship staff.dep ဆိုတာက staff model ထဲမှာ ရေးထားတဲ့ dep relationship
-        $salarylist=salary::with('staff','staff.dep')->whereMonth('created_at',$Month)->whereYear('created_at',$Year) ->get();
+        $salarylist=salary::with('staff')->whereMonth('created_at',$Month)->whereYear('created_at',$Year)->get();
 
         return response()->json($salarylist, 200 );
 
@@ -32,7 +32,7 @@ class SalaryController extends Controller
             $date=Carbon::parse($selectedDate); //backend ကလက်ခံတဲ့ format ပြောင်းတယ်
             $Month=$date->format('m'); //လကိုခွဲထုတ်တယ်
             $Year=$date->format('Y');//နှစ်ကိုခွဲထုတ်တယ်
-            $salarylist=salary::with('staff','staff.dep')->whereMonth('created_at',$Month)->whereYear('created_at',$Year)->get();
+            $salarylist=salary::with('staff')->whereMonth('created_at',$Month)->whereYear('created_at',$Year)->get();
 
             return response()->json($salarylist, 200 );
         }
