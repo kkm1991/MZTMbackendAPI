@@ -68,4 +68,5 @@ Route::middleware(['auth:sanctum'])->prefix('salary')->group(function(){
     Route::patch('update',[SalaryController::class,'updatesalary']);
     Route::get('delete',[SalaryController::class,'deletesalary']);
     Route::get('report',[SalaryController::class,'salaryReport']);
+    Route::get('slip',[SalaryController::class,'slip']);
 });

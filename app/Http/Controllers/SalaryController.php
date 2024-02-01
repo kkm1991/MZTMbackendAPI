@@ -220,4 +220,11 @@ class SalaryController extends Controller
         }
         return response()->json($summaryListByDeps, 200 );
     }
+
+    public function slip(Request $request){
+
+        $slipdata=salary::with('staff')->where('id',$request->salaryId)->first();
+
+          return response()->json($slipdata, 200);
+    }
 }
