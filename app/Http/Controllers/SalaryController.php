@@ -223,8 +223,13 @@ class SalaryController extends Controller
 
     public function slip(Request $request){
 
-        $slipdata=salary::with('staff')->where('id',$request->salaryId)->first();
+        // $slipdata=salary::with('staff')->where('id',$request->salaryId)->first();
 
-          return response()->json($slipdata, 200);
+        $slipinfo=salary::select('salaries.*' ,'staffs.name as staff_name','deps.title as dep_title' )
+        ->leftJoin('staffs','staff_id','=','staffs.id')
+        ->leftJoin('deps','dep','=','deps.id')
+        ->where('salaries.id',$request->salaryId)
+        ->first();
+          return response()->json($slipinfo, 200);
     }
 }
