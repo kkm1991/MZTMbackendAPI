@@ -8,6 +8,7 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\StaffsController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\EducationController;
+use App\Http\Controllers\DebtRecordController;
 use App\Http\Controllers\DefaultReservationController;
 use App\Http\Controllers\MonthlyReservationController;
 
@@ -69,4 +70,8 @@ Route::middleware(['auth:sanctum'])->prefix('salary')->group(function(){
     Route::get('delete',[SalaryController::class,'deletesalary']);
     Route::get('report',[SalaryController::class,'salaryReport']);
     Route::get('slip',[SalaryController::class,'slip']);
+});
+
+Route::middleware(['auth:sanctum'])->prefix('debt')->group(function(){
+    Route::get('records',[DebtRecordController::class,'records']);
 });

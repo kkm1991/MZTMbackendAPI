@@ -6,6 +6,7 @@ use Log;
 use Carbon\Carbon;
 use App\Models\deps;
 use App\Models\salary;
+use App\Models\Staffs;
 use Illuminate\Http\Request;
 use App\Models\defaultReservation;
 use App\Models\monthlyReservation;
@@ -41,17 +42,30 @@ class SalaryController extends Controller
 
     //delete salary function မှာ reservation ကိုပါဖျက်တဲ့စနစ်လုပ်ထားတယ်
     public function deletesalary(Request $request){
-        $deletereservation=monthlyReservation::where('id',$request->reservation_id);
+        try {
+            $deletereservation=monthlyReservation::where('id',$request->reservation_id);
         $deletereservation->delete();
 
-        $deletesalary=salary::where('id',$request->id);
+        $deletesalary=salary::find($request->id);
+        if($deletesalary->redeem > 0){
+            $debtupdate=Staffs::find($deletesalary->staff_id);
+            if($debtupdate){
+                $olddebt=$debtupdate->debt;
+            $debtupdate->debt=$olddebt+$deletesalary->redeem;
+            $debtupdate->save();
+            }
+          }
         $deletesalary->delete();
         return response()->json(['message'=>"Salary and Reservation List deleted"], 200 );
+        } catch (Exception $th) {
+           return response()->json($deletesalary);
+        }
     }
 
     //sarlary ကို update လုပ် ရင် reservation ကိုပါ update မယ်
         public function updatesalary(Request $request){
-            Log::info('Request data:', $request->all());
+
+                try{
 
             //monthly reservation update function
             $this->updatemonthlyReservation($request);
@@ -68,6 +82,18 @@ class SalaryController extends Controller
             $salaryupdate->absence=$request->absence;
             $salaryupdate->ssbFee=$request->ssbFee;
             $salaryupdate->fine=$request->fine;
+            //လက်ရှိအကြွေးကိုယူတယ်
+            $staff=Staffs::find($request->staff_id);
+           if($staff){
+            $olddebt=$staff->debt;
+
+            $olderedeem=$salaryupdate->redeem; //update မလုပ်ခင်ကဆပ်လိုက်တဲ့ ကြွေးဆပ်ကိုယူတယ်
+             // လက်ရှိအကြွေးကို update မလုပ်ခင်က ကြွေးဆပ်ပေါင်းထဲ့လိုက်တယ် အဲ့ဒါမှ ယခင်လ ကြွေးကျန်မူရင်းကိုရမယ် ပြီးမှ update redeem ကို ပြန်နှုတ်ပေးလိုက်တယ်
+            $staff->debt=($olddebt+$olderedeem)-$request->redeem;
+            $staff->save();
+           }
+
+
             $salaryupdate->redeem=$request->redeem;
             $salaryupdate->advance_salary=$request->advance_salary;
             $salaryupdate->otherDeductLable=$request->otherDeductLable;
@@ -76,7 +102,12 @@ class SalaryController extends Controller
             $salaryupdate->save();
 
             return response()->json(['message'=>"Salary updated"], 200 );
+            }
+            catch(Exception $e){
+                return response()->json(['Error message'=>$e]);
+            }
         }
+
 
 
         public function updatemonthlyReservation(Request $request){
@@ -163,6 +194,8 @@ class SalaryController extends Controller
     }
     public function createSalary($reservation,$dep){
 
+        try {
+
           $addsalary=new salary();
 
           foreach($reservation as $monthlyReservation){
@@ -195,9 +228,27 @@ class SalaryController extends Controller
               $monthlyReservation->advance_salary+
               $monthlyReservation->otherDeduct;
               $addsalary->finalTotal= $firsttotal -$totaldeduct;
+
+
+              if($monthlyReservation->redeem >0){
+               $debtupdate=Staffs::find($monthlyReservation->staff_id);
+               $olddebt=$debtupdate->debt;
+               $debtupdate->debt=$olddebt-$monthlyReservation->redeem;
+               $debtupdate->save();
+             }
+             else{
+                return response()->json([ 'message'=>'ကြွေးမရှိဘူး'.$monthlyReservation->redeem]);
+             }
+
+
               $addsalary->save();
 
           }
+
+        } catch (\Throwable $th) {
+           return response()->json($th, 500 );
+        }
+
 
     }
 

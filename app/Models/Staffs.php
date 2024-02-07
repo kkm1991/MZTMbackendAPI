@@ -16,4 +16,7 @@ class Staffs extends Model
 
         return $this->belongsTo(deps::class, 'depID' );
     }
+    public function debts(){
+        return $this->hasMany(debtRecord::class,'staff_id');
+    }
 }

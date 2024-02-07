@@ -139,6 +139,7 @@ class StaffsController extends Controller
 
     public function delete(Request $request){
        $deletestaff= Staffs::find($request->id);
+       if($deletestaff){
         if(File::exists(public_path().'/storage/uploads/'.$deletestaff->image)){
             File::delete(public_path().'/storage/uploads/'.$deletestaff->image);
          }
@@ -146,6 +147,10 @@ class StaffsController extends Controller
 
          $this->deleteDefaultReservation($request->id);
          return $this->responsesStaff($request->key);
+       }
+       else{
+        return response()->json(['Message'=>'Staff not found']);
+       }
     }
     //ဝန်ထမ်းဖျက်အဆုံး
 
