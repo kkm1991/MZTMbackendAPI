@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\deps;
 use App\Models\salary;
 use App\Models\Staffs;
+use App\Models\debtRecord;
 use Illuminate\Http\Request;
 use App\Models\defaultReservation;
 use App\Models\monthlyReservation;
@@ -93,6 +94,11 @@ class SalaryController extends Controller
             $staff->save();
            }
 
+           $redeemupdate=debtRecord::find($request->redeem_record);
+           if($redeemupdate){
+                $redeemupdate->amount=$request->redeem;
+                $redeemupdate->save();
+           }
 
             $salaryupdate->redeem=$request->redeem;
             $salaryupdate->advance_salary=$request->advance_salary;
@@ -235,6 +241,15 @@ class SalaryController extends Controller
                $olddebt=$debtupdate->debt;
                $debtupdate->debt=$olddebt-$monthlyReservation->redeem;
                $debtupdate->save();
+
+               $addrecord=new debtRecord();
+               $addrecord->staff_id=$monthlyReservation->staff_id;
+               $addrecord->amount=$monthlyReservation->redeem;
+               $addrecord->type="payment";
+               $addrecord->description="salary";
+               $addrecord->save();
+               $addsalary->redeem_record=$addrecord->id;
+
              }
              else{
                 return response()->json([ 'message'=>'ကြွေးမရှိဘူး'.$monthlyReservation->redeem]);

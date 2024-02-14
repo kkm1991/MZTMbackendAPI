@@ -31,6 +31,7 @@ class StaffsController extends Controller
         $validator=Validator::make($request->all(),[
             'name'=>'required',
             'educationID'=>'required',
+            'dob'=>'required',
             'start_working_date'=>'required',
             'depID'=>'required',
             'positionID'=>'required',

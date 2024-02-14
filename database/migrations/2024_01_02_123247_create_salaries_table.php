@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('ssbFee');
             $table->integer('fine');
             $table->integer('redeem');
+            $table->integer('redeem_record');
             $table->integer('advance_salary');
             $table->string('otherDeductLable')->nullable();
             $table->integer('otherDeduct');
