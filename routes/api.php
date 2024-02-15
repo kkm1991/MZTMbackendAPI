@@ -75,4 +75,6 @@ Route::middleware(['auth:sanctum'])->prefix('salary')->group(function(){
 Route::middleware(['auth:sanctum'])->prefix('debt')->group(function(){
     Route::get('records',[DebtRecordController::class,'records']);
     Route::post('add/loan',[DebtRecordController::class,'addnew']);
+    Route::delete('delete/loan',[DebtRecordController::class,'loandelete']);
+    Route::patch('update/loan',[DebtRecordController::class,'loanupdate']);
 });
