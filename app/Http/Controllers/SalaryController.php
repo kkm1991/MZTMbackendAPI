@@ -153,10 +153,12 @@ class SalaryController extends Controller
             //စာရင်းရှိရင်ထပ်မသွင်းဘူး ရှိပြီးကြောင်းပြတယ်
             return response()->json([
                 'message'=>'ယခုဝန်ထမ်းသည် လစာ စာရင်းထဲတွင်ရှည်ပြီးသားဖြစ်ပါသည်'
-            ], 200, $headers);
+            ], 200 );
         }
         else{
-            //စာရင်းသွင်းဖို.အတွက် လစဉ်ကြိုတင်ငွေစာရင်းထဲမှာ staff_id နဲ့သွင်းထားလာမသွင်းထားလားကြည့်တယ်
+
+
+            // //စာရင်းသွင်းဖို.အတွက် လစဉ်ကြိုတင်ငွေစာရင်းထဲမှာ staff_id နဲ့သွင်းထားလာမသွင်းထားလားကြည့်တယ်
             $checkMonthlyReservation=monthlyReservation::with('staff')->where('staff_id',$request->staff_id)
             ->whereMonth('created_at',$currentMonth)
             ->whereYear('created_at',$currentYear)
@@ -164,9 +166,14 @@ class SalaryController extends Controller
 
             if($checkMonthlyReservation->count()>0){
                 //အကယ်၍ monthly reservation ထဲမှာ current date format နဲ့ စာရင်းရှိရင် monthly reservation နဲ့လစာပေးမယ်
-              $this->createSalary($checkMonthlyReservation,$request->dep);
+               $this->createSalary($checkMonthlyReservation,$request->dep);
+            // return response()->json([
+            //     'message'=>'Monthly Reservation have'
+            // ], 200 );
+
             }
             else{
+
                 //monthly reservation မှာစာရင်းမရှိရင် default reservation ကို monthly reservation စာရင်းထဲ့မှာအရင်သွင်းမယ်
                 $defaultReservation=defaultReservation::where('staff_id',$request->staff_id)->first();
                 $createMonthlyReservation=monthlyReservation::create([
@@ -185,17 +192,17 @@ class SalaryController extends Controller
                     'staff_id'=>$defaultReservation->staff_id
                 ]);
 
-                // $checkMonthlyReservation=monthlyReservation::with('staff')->where('staff_id',$request->staff_id)
-                // ->whereMonth('created_at',$currentMonth)
-                // ->whereYear('created_at',$currentYear)
-                // ->get();
+                $checkMonthlyReservation=monthlyReservation::with('staff')->where('staff_id',$request->staff_id)
+                ->whereMonth('created_at',$currentMonth)
+                ->whereYear('created_at',$currentYear)
+                ->get();
 
                 //အပေါ်မှာအသစ်လုပ်လိုက်တဲ့ monthly reservation အသစ်ကိုထဲ့ပေးလိုက်တယ်
-                $this->createSalary($createMonthlyReservation,$request->dep);
+                $this->createSalary( $checkMonthlyReservation,$request->dep);
 
             }
-        }
 
+        }
 
     }
     public function createSalary($reservation,$dep){
@@ -251,17 +258,12 @@ class SalaryController extends Controller
                $addsalary->redeem_record=$addrecord->id;
 
              }
-             else{
-                return response()->json([ 'message'=>'ကြွေးမရှိဘူး'.$monthlyReservation->redeem]);
-             }
-
-
-              $addsalary->save();
 
           }
-
-        } catch (\Throwable $th) {
-           return response()->json($th, 500 );
+          $addsalary->save();
+          return response()->json([ 'message'=>'Salary added']);
+        } catch (Exception $th) {
+           return response()->json(["error"=>$th->getMessage()] );
         }
 
 
